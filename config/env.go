@@ -9,7 +9,12 @@ import (
 )
 
 type Env struct {
-	DB DB
+	App App
+	DB  DB
+}
+
+type App struct {
+	Port string
 }
 
 type DB struct {

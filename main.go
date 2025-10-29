@@ -38,12 +38,5 @@ func main() {
 	}
 	defer db.Close()
 
-	log.Info().Msg("successfully connected to sqlx db")
-
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(env.App.Port, mux)
 }
-
-// TODO:
-// - viper
-// - configure CI/CD
-// - linter
