@@ -7,6 +7,7 @@ import (
 	"mona/domain/repository"
 	"mona/domain/service"
 	"mona/infrastructure/repository/sqlx"
+	"net/http"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -23,12 +24,14 @@ func main() {
 	svc := service.New()
 	adminApi := adminv1.New(svc, log)
 	paymentApi := paymentv1.New(svc, log)
-	_ = adminApi
-	_ = paymentApi
+
+	mux := http.NewServeMux()
+	adminApi.InitRoutes(mux)
+	paymentApi.InitRoutes(mux)
 
 	repo := repository.New()
 	_ = repo
-	
+
 	db, err := sqlx.Connect(env.DB.DSN)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to sqlx db")
@@ -36,4 +39,11 @@ func main() {
 	defer db.Close()
 
 	log.Info().Msg("successfully connected to sqlx db")
+
+	http.ListenAndServe(":8080", mux)
 }
+
+// TODO:
+// - viper
+// - configure CI/CD
+// - linter

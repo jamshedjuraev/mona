@@ -7,4 +7,3 @@ type ServiceFacade struct {
 func New() *ServiceFacade {
 	return &ServiceFacade{}
 }
-

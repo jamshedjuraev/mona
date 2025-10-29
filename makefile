@@ -10,4 +10,7 @@ down:
 run:
 	go run main.go
 
-.PHONY: up run
+lint:
+	golangci-lint run ./...
+
+.PHONY: up down run lint

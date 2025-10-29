@@ -1,6 +1,6 @@
 package repository
 
-type RepoFacade struct {}
+type RepoFacade struct{}
 
 func New() *RepoFacade {
 	return &RepoFacade{}

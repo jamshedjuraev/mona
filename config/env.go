@@ -69,6 +69,6 @@ func fillStructFromMap(v reflect.Value, vars map[string]string) error {
 			return fmt.Errorf("key does not match any field or is missing: %s", field.Name)
 		}
 	}
-	
+
 	return nil
 }

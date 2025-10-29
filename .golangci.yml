@@ -1,0 +1,185 @@
+version: "2"
+
+linters:
+  default: none
+
+  # Enable specific linter.
+  enable:
+    - asasalint
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - copyloopvar
+    - cyclop
+    - decorder
+    - depguard
+    - dogsled
+    - dupl
+    - embeddedstructfieldcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - fatcontext
+    - forcetypeassert
+    - funcorder
+    - gochecknoinits
+    - gochecksumtype
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - gosmopolitan
+    - govet
+    - iface
+    - inamedparam
+    - lll
+    - maintidx
+    - makezero
+    - mirror
+    - misspell
+    - mnd
+    - musttag
+    - nakedret
+    - nilnesserr
+    - nilnil
+    - noctx
+    - noinlineerr
+    - nonamedreturns
+    - nosprintfhostport
+    - promlinter
+    - reassign
+    - recvcheck
+    - rowserrcheck
+    - spancheck
+    - sqlclosecheck
+    - tagalign
+    - testifylint
+    - unconvert
+    - usestdlibvars
+    - usetesting
+    - wastedassign
+    - whitespace
+    - zerologlint
+
+  settings:
+    mnd:
+      # Какие типы проверять
+      checks:
+        - argument    # аргументы функций
+        - case        # case в switch  
+        - condition   # условия if/for
+        - operation   # математические операции
+        - return      # return значения
+        - assign      # присваивания
+
+      # Игнорировать эти числа. Обычно 0, 1, 2, 3 не считаются магическими числами.
+      ignored-numbers:
+        - '0'
+        - '1' 
+        - '2'
+        - '3'
+        - '200'       # HTTP 200 OK
+        - '201'       # HTTP 201 Created
+        - '204'       # HTTP 204 No Content
+        - '400'       # HTTP 400 Bad Request
+        - '401'       # HTTP 401 Unauthorized  
+        - '404'       # HTTP 404 Not Found
+        - '429'       # HTTP 429 Too Many Requests
+        - '500'       # HTTP 500 Internal Server Error
+        - '1024'      # размеры буферов
+        - '8080'      # стандартный порт
+        - '9090'      # Prometheus порт
+        - '3000'      # Grafana порт
+        - '80'        # JPEG quality
+        - '256'       # Image size for thumbnail (256x256)
+        - '1080'      # Image width for 9:16
+        - '1920'      # Image height for 9:16
+        - '0o755'     # файловые права rwxr-xr-x
+      # Игнорировать в этих функциях
+      ignored-functions:
+        - 'math.*'
+        - 'time.*'
+        - 'make'
+        - 'strconv.*'
+        - 'context.WithTimeout'
+    dupl:
+      threshold: 200
+    # Depguard linter is used to prevent the use of unmaintained packages
+    depguard:
+      rules:
+        prevent_unmaintained_packages:
+          list-mode: lax # allow unless explicitely denied
+          files:
+            - $all
+            - "!$test"
+          allow:
+            - $gostd
+          deny:
+            - pkg: io/ioutil
+              desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
+            # - pkg: reflect
+            #   desc: "Who tf needs reflection?"
+    lll:
+      tab-width: 1
+      line-length: 250 # TODO: it should be shorter, recommended: 120
+    gocritic:
+      disabled-checks:
+        - unslice
+    cyclop:
+      max-complexity: 14 # TODO: it should be 10
+    goconst:
+      min-len: 3          # Минимальная длина строки для поиска
+      min-occurrences: 3  # Минимальное количество повторений
+      ignore-calls: true  # Игнорировать вызовы функций
+    gocognit:
+      min-complexity: 30
+    testifylint:
+      enable-all: true  # Включить все проверки по умолчанию
+      bool-compare:
+        ignore-custom-types: false  # Игнорировать пользовательские типы
+      expected-actual:
+        pattern: "^expected$"  # Игнорировать строки, содержащие "expected" 
+      formatter:
+        check-format-string: true  # Проверять форматирование строк
+        require-f-funcs: true      # Проверять наличие f-функций
+        require-string-msg: true   # Проверять наличие строковых сообщений
+      go-require:
+        ignore-http-handlers: false  # Игнорировать HTTP-обработчики
+      require-error:
+        fn-pattern: "^(Errorf?|NoErrorf?)$"  # Игнорировать функции, содержащие "Errorf" или "NoErrorf"
+      suite-extra-assert-call:
+        mode: "require"
+    gosec:
+      includes:
+        - G101 # Hardcoded credentials
+        - G201 # SQL injection with format string
+        - G202 # SQL injection with string concatenation
+        - G401 # Weak crypto
+
+  exclusions:
+    paths:
+      - internal/shared/mocks # Exclude mock files from linting
+      - ".*_test\\.go$" # Exclude test files from goconst
+    rules:
+      # Should not check tests files for complexity
+      - path: ".*_test\\.go$"
+        linters:
+          - gocognit
+
+formatters:
+  enable:
+    - gofumpt
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  fix: true
+
+run:
+  timeout: 5m
+  relative-path-mode: gomod
+  modules-download-mode: readonly
+  allow-parallel-runners: true
+  allow-serial-runners: true
